@@ -1,9 +1,10 @@
 package com.accounts.accountmanagementapp.service.user;
 
-import com.accounts.accountmanagementapp.dto.EditPasswordRequestDTO;
-import com.accounts.accountmanagementapp.dto.EditRoleRequestDTO;
-import com.accounts.accountmanagementapp.dto.EditUserRequestDTO;
-import com.accounts.accountmanagementapp.dto.SaveUserRequestDTO;
+import com.accounts.accountmanagementapp.dto.requestDto.EditPasswordRequestDTO;
+import com.accounts.accountmanagementapp.dto.requestDto.EditRoleRequestDTO;
+import com.accounts.accountmanagementapp.dto.requestDto.EditUserRequestDTO;
+import com.accounts.accountmanagementapp.dto.requestDto.SaveUserRequestDTO;
+import com.accounts.accountmanagementapp.dto.responseDto.UserResponseDTO;
 import com.accounts.accountmanagementapp.model.User;
 
 import java.util.List;
@@ -11,19 +12,19 @@ import java.util.UUID;
 
 public interface UserService {
 
-    User saveUser(SaveUserRequestDTO saveUserRequestDTO);
+    UserResponseDTO saveUser(SaveUserRequestDTO saveUserRequestDTO);
 
-    User editUser(EditUserRequestDTO editUserRequestDTO);
+    UserResponseDTO editUser(EditUserRequestDTO editUserRequestDTO);
 
-    User editPassword(EditPasswordRequestDTO editPasswordDTO);
+    UserResponseDTO editPassword(EditPasswordRequestDTO editPasswordDTO);
 
-    User editRole(EditRoleRequestDTO editRoleRequestDTO);
+    UserResponseDTO editRole(EditRoleRequestDTO editRoleRequestDTO);
 
-    User editStatus(String status);
+    UserResponseDTO editStatus(String status);
 
     void deleteUser(UUID id);
 
-    List<User> getUsers();
+    List<UserResponseDTO> getUsers();
 
-    User getUser(UUID id);
+    UserResponseDTO getUser(UUID id);
 }
