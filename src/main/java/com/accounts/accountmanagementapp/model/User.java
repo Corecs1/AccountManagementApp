@@ -1,26 +1,31 @@
 package com.accounts.accountmanagementapp.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.UUID;
 
 @Entity
 @Table(name = "Users")
+@Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class User implements UserDetails {
 
     @Id
+    @Column(name = "id", columnDefinition = "UUID")
     @GeneratedValue(generator = "UUID")
-    @Column(name = "id")
     private UUID id;
 
     @NotBlank(message = "Email is an important field")
@@ -62,5 +67,35 @@ public class User {
     @PrePersist
     private void initCreateTime() {
         creationDate = LocalDateTime.now();
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
+    @Override
+    public String getUsername() {
+        return null;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
     }
 }

@@ -5,6 +5,7 @@ import com.accounts.accountmanagementapp.dto.requestDto.EditRoleRequestDTO;
 import com.accounts.accountmanagementapp.dto.requestDto.EditUserRequestDTO;
 import com.accounts.accountmanagementapp.dto.requestDto.SaveUserRequestDTO;
 import com.accounts.accountmanagementapp.dto.responseDto.UserResponseDTO;
+import com.accounts.accountmanagementapp.repository.RoleRepository;
 import com.accounts.accountmanagementapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,15 +20,17 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     @Override
     public UserResponseDTO saveUser(SaveUserRequestDTO saveUserRequestDTO) {
-
         return null;
     }
 
     @Override
     public UserResponseDTO editUser(EditUserRequestDTO editUserRequestDTO) {
+//        User user = userRepository.getByEmail(editUserRequestDTO.getEmail());
+//        user.setEmail();
         return null;
     }
 
