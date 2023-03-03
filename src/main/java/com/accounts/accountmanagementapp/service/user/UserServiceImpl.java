@@ -6,6 +6,7 @@ import com.accounts.accountmanagementapp.dto.requestDto.EditRoleRequestDTO;
 import com.accounts.accountmanagementapp.dto.requestDto.EditUserRequestDTO;
 import com.accounts.accountmanagementapp.dto.requestDto.SaveUserRequestDTO;
 import com.accounts.accountmanagementapp.dto.responseDto.UserResponseDTO;
+import com.accounts.accountmanagementapp.exception.UserHasAlreadyExistException;
 import com.accounts.accountmanagementapp.model.Role;
 import com.accounts.accountmanagementapp.model.Status;
 import com.accounts.accountmanagementapp.model.User;
@@ -33,17 +34,15 @@ public class UserServiceImpl implements UserService {
 
     // TODO Переделать под лямбду
     @Override
-    public UserResponseDTO saveUser(SaveUserRequestDTO saveUserRequestDTO) {
-        User user = userRepository.getUserByEmail(saveUserRequestDTO.getEmail());
+    public UserResponseDTO saveUser(SaveUserRequestDTO saveUserRequestDTO) throws UserHasAlreadyExistException {
 
-        // TODO Создать exception UserHasAlreadyExist и выбросить исключенеие
-        if (user != null) {
-            return null;
+        if (userExist(saveUserRequestDTO.getEmail())) {
+            throw new UserHasAlreadyExistException("Пользователь с данным email уже существует");
         }
 
         Role role = roleRepository.getRoleById(saveUserRequestDTO.getRole());
 
-        user = User.builder()
+        User user = User.builder()
                 .email(saveUserRequestDTO.getEmail())
                 .password(passwordEncoder.encode(saveUserRequestDTO.getPassword()))
                 .name(saveUserRequestDTO.getName())
@@ -57,6 +56,7 @@ public class UserServiceImpl implements UserService {
 
         return userResponseDTOMapper.apply(savedUser);
     }
+
 
     @Override
     public UserResponseDTO editUser(EditUserRequestDTO editUserRequestDTO) {
@@ -98,12 +98,12 @@ public class UserServiceImpl implements UserService {
     //TODO Обработать по нормальному
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.getUserByEmail(username);
-
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found");
-        }
-
+        User user = userRepository.getUserByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return null;
+    }
+
+    private boolean userExist(String email) {
+        return userRepository.getUserByEmail(email).isPresent();
     }
 }
