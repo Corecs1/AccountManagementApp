@@ -5,9 +5,15 @@ import com.accounts.accountmanagementapp.dto.requestDto.EditRoleRequestDTO;
 import com.accounts.accountmanagementapp.dto.requestDto.EditUserRequestDTO;
 import com.accounts.accountmanagementapp.dto.requestDto.SaveUserRequestDTO;
 import com.accounts.accountmanagementapp.dto.responseDto.UserResponseDTO;
+import com.accounts.accountmanagementapp.model.Role;
+import com.accounts.accountmanagementapp.model.Status;
+import com.accounts.accountmanagementapp.model.User;
 import com.accounts.accountmanagementapp.repository.RoleRepository;
 import com.accounts.accountmanagementapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -21,10 +27,40 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
+    // TODO Переделать под лямбду
     @Override
     public UserResponseDTO saveUser(SaveUserRequestDTO saveUserRequestDTO) {
-        return null;
+        User user = userRepository.getUserByEmail(saveUserRequestDTO.getEmail());
+
+        // TODO Создать exception UserHasAlreadyExist и выбросить исключенеие
+        if (user != null) {
+            return null;
+        }
+
+        Role role = roleRepository.getRoleById(saveUserRequestDTO.getRole());
+
+        user = User.builder()
+                .email(saveUserRequestDTO.getEmail())
+                .password(saveUserRequestDTO.getPassword())
+                .firsName(saveUserRequestDTO.getName())
+                .lastName(saveUserRequestDTO.getFamilyName())
+                .middleName(saveUserRequestDTO.getMiddleName())
+                .role(role)
+                .status(Status.ACTIVE)
+                .build();
+
+        User savedUser = userRepository.save(user);
+
+        return new UserResponseDTO(savedUser.getId(),
+                savedUser.getEmail(),
+                savedUser.getLastName(),
+                savedUser.getFirsName(),
+                savedUser.getMiddleName(),
+                savedUser.getRole().getId(),
+                savedUser.getStatus(),
+                savedUser.getCreationDate());
     }
 
     @Override
@@ -61,6 +97,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO getUser(UUID id) {
+        return null;
+    }
+
+    //TODO Обработать по нормальному
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.getUserByEmail(username);
+
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
+
         return null;
     }
 }

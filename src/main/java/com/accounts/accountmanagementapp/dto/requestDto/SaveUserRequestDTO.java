@@ -14,8 +14,8 @@ import java.util.UUID;
 public class SaveUserRequestDTO {
     private String email;
     private String password;
-    private String firstName;
-    private String lastName;
+    private String familyName;
+    private String name;
     private String middleName;
     private UUID role;
 }

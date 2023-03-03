@@ -6,11 +6,12 @@ import com.accounts.accountmanagementapp.dto.requestDto.EditUserRequestDTO;
 import com.accounts.accountmanagementapp.dto.requestDto.SaveUserRequestDTO;
 import com.accounts.accountmanagementapp.dto.responseDto.UserResponseDTO;
 import com.accounts.accountmanagementapp.model.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 import java.util.UUID;
 
-public interface UserService {
+public interface UserService extends UserDetailsService {
 
     UserResponseDTO saveUser(SaveUserRequestDTO saveUserRequestDTO);
 

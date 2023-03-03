@@ -1,8 +1,10 @@
 package com.accounts.accountmanagementapp.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -12,10 +14,11 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "Roles")
+@Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Role {
+public class Role implements GrantedAuthority {
 
     @Id
     @Column(name = "id", columnDefinition = "UUID")
@@ -31,4 +34,9 @@ public class Role {
 
     @Column(name = "description")
     private String description;
+
+    @Override
+    public String getAuthority() {
+        return getName();
+    }
 }
