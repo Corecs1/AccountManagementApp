@@ -1,5 +1,6 @@
 package com.accounts.accountmanagementapp.service.user;
 
+import com.accounts.accountmanagementapp.dto.mapper.UserResponseDTOMapper;
 import com.accounts.accountmanagementapp.dto.requestDto.EditPasswordRequestDTO;
 import com.accounts.accountmanagementapp.dto.requestDto.EditRoleRequestDTO;
 import com.accounts.accountmanagementapp.dto.requestDto.EditUserRequestDTO;
@@ -28,6 +29,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserResponseDTOMapper userResponseDTOMapper;
 
     // TODO Переделать под лямбду
     @Override
@@ -43,9 +45,9 @@ public class UserServiceImpl implements UserService {
 
         user = User.builder()
                 .email(saveUserRequestDTO.getEmail())
-                .password(saveUserRequestDTO.getPassword())
-                .firsName(saveUserRequestDTO.getName())
-                .lastName(saveUserRequestDTO.getFamilyName())
+                .password(passwordEncoder.encode(saveUserRequestDTO.getPassword()))
+                .name(saveUserRequestDTO.getName())
+                .familyName(saveUserRequestDTO.getFamilyName())
                 .middleName(saveUserRequestDTO.getMiddleName())
                 .role(role)
                 .status(Status.ACTIVE)
@@ -53,14 +55,7 @@ public class UserServiceImpl implements UserService {
 
         User savedUser = userRepository.save(user);
 
-        return new UserResponseDTO(savedUser.getId(),
-                savedUser.getEmail(),
-                savedUser.getLastName(),
-                savedUser.getFirsName(),
-                savedUser.getMiddleName(),
-                savedUser.getRole().getId(),
-                savedUser.getStatus(),
-                savedUser.getCreationDate());
+        return userResponseDTOMapper.apply(savedUser);
     }
 
     @Override

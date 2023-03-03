@@ -42,12 +42,12 @@ public class User implements UserDetails {
     @Pattern(message = "First name should be correct", regexp = "[a-zA-Z\u0430-\u044F\u0410-\u042F-]")
     @NotBlank(message = "First name is an important field")
     @Column(name = "first_name")
-    private String firsName;
+    private String name;
 
     @Pattern(message = "Last name should be correct", regexp = "[a-zA-Z\u0430-\u044F\u0410-\u042F-]")
     @NotBlank(message = "Last name is an important field")
     @Column(name = "last_name")
-    private String lastName;
+    private String familyName;
 
     @Pattern(message = "Middle name should be correct", regexp = "[a-zA-Z\u0430-\u044F\u0410-\u042F-]")
     @Column(name = "middle_name")
@@ -64,11 +64,11 @@ public class User implements UserDetails {
     private Status status;
 
     @Column(name = "creation_date")
-    private LocalDateTime creationDate;
+    private LocalDateTime createdAt;
 
     @PrePersist
     private void initCreateTime() {
-        creationDate = LocalDateTime.now();
+        createdAt = LocalDateTime.now();
     }
 
     @Override
