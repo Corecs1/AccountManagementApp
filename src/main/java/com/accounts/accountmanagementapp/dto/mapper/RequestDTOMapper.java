@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RequestDTOMapper {
-
     public User apply(SaveUserRequestDTO saveUserRequestDTO, Role role, PasswordEncoder passwordEncoder) {
         return User.builder()
                 .email(saveUserRequestDTO.getEmail())

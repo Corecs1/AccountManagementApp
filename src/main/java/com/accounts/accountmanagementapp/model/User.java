@@ -39,17 +39,17 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
-    @Pattern(message = "First name should be correct", regexp = "[a-zA-Z\u0430-\u044F\u0410-\u042F-]")
+    @Pattern(message = "First name should be correct", regexp = "[a-zA-Z\u0430-\u044F\u0410-\u042F-]+")
     @NotBlank(message = "First name is an important field")
     @Column(name = "first_name")
     private String name;
 
-    @Pattern(message = "Last name should be correct", regexp = "[a-zA-Z\u0430-\u044F\u0410-\u042F-]")
+    @Pattern(message = "Last name should be correct", regexp = "[a-zA-Z\u0430-\u044F\u0410-\u042F-]+")
     @NotBlank(message = "Last name is an important field")
     @Column(name = "last_name")
     private String familyName;
 
-    @Pattern(message = "Middle name should be correct", regexp = "[a-zA-Z\u0430-\u044F\u0410-\u042F-]")
+    @Pattern(message = "Middle name should be correct", regexp = "[a-zA-Z\u0430-\u044F\u0410-\u042F-]+")
     @Column(name = "middle_name")
     private String middleName;
 

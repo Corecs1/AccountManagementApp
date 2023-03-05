@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,9 +29,9 @@ import java.util.stream.Collectors;
 
 // TODO Допилить все эндпоинты
 @Service
-@Validated
 @RequiredArgsConstructor
 @Transactional
+@Validated
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -39,9 +40,8 @@ public class UserServiceImpl implements UserService {
     private final ResponseDTOMapper responseDTOMapper;
     private final RequestDTOMapper requestDTOMapper;
 
-    // TODO Переделать под лямбду
     @Override
-    public UserResponseDTO saveUser(SaveUserRequestDTO saveUserRequestDTO) throws UserHasAlreadyExistException {
+    public UserResponseDTO saveUser(@Valid SaveUserRequestDTO saveUserRequestDTO) throws UserHasAlreadyExistException {
 
         if (userExist(saveUserRequestDTO.getEmail())) {
             throw new UserHasAlreadyExistException("Пользователь с данным email уже существует");
@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO editUser(UUID id, EditUserRequestDTO editUserRequestDTO) {
+    public UserResponseDTO editUser(UUID id, @Valid EditUserRequestDTO editUserRequestDTO) {
         Optional<User> user = userRepository.findById(id);
         User updatedUser = requestDTOMapper.apply(editUserRequestDTO, user.get());
         userRepository.save(updatedUser);
@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO editPassword(UUID id, EditPasswordRequestDTO editPasswordRequestDTO) {
+    public UserResponseDTO editPassword(UUID id, @Valid EditPasswordRequestDTO editPasswordRequestDTO) {
         if (editPasswordRequestDTO.getPassword().equals(editPasswordRequestDTO.getConfirmPassword())) {
             Optional<User> user = userRepository.findById(id);
             User updatedUser = user.get();
@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO editRole(UUID id, EditRoleRequestDTO editRoleRequestDTO) {
+    public UserResponseDTO editRole(UUID id, @Valid EditRoleRequestDTO editRoleRequestDTO) {
         Role role = roleRepository.getRoleById(editRoleRequestDTO.getRole());
         Optional<User> user = userRepository.findById(id);
         User updatedUser = user.get();
@@ -102,10 +102,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserResponseDTO> getUsers() {
-        return userRepository.findAll()
-                .stream()
-                .map(responseDTOMapper::apply)
-                .collect(Collectors.toList());
+        return userRepository.findAll().stream().map(responseDTOMapper::apply).collect(Collectors.toList());
     }
 
     @Override
@@ -116,8 +113,7 @@ public class UserServiceImpl implements UserService {
     //TODO Обработать по нормальному
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.getUserByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.getUserByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return null;
     }
 

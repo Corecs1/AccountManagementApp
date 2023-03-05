@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ResponseDTOMapper {
-
     public UserResponseDTO apply(User user) {
         return new UserResponseDTO(user.getId(),
                 user.getEmail(),
