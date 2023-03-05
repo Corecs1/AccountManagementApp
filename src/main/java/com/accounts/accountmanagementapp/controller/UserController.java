@@ -6,6 +6,7 @@ import com.accounts.accountmanagementapp.dto.requestDto.EditUserRequestDTO;
 import com.accounts.accountmanagementapp.dto.requestDto.SaveUserRequestDTO;
 import com.accounts.accountmanagementapp.dto.responseDto.UserResponseDTO;
 import com.accounts.accountmanagementapp.exception.UserHasAlreadyExistException;
+import com.accounts.accountmanagementapp.exception.WrongValueStatusException;
 import com.accounts.accountmanagementapp.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -43,7 +44,7 @@ public class UserController {
     }
 
     @PostMapping("/{id}/{state}")
-    public ResponseEntity<UserResponseDTO> editStatus(@PathVariable UUID id, @PathVariable String state) {
+    public ResponseEntity<UserResponseDTO> editStatus(@PathVariable UUID id, @PathVariable String state) throws WrongValueStatusException {
         return new ResponseEntity<>(userService.editStatus(id, state), HttpStatus.OK);
     }
 

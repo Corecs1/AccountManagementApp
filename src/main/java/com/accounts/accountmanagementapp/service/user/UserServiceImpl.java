@@ -7,7 +7,9 @@ import com.accounts.accountmanagementapp.dto.requestDto.EditRoleRequestDTO;
 import com.accounts.accountmanagementapp.dto.requestDto.EditUserRequestDTO;
 import com.accounts.accountmanagementapp.dto.requestDto.SaveUserRequestDTO;
 import com.accounts.accountmanagementapp.dto.responseDto.UserResponseDTO;
+import com.accounts.accountmanagementapp.exception.PasswordMismatchException;
 import com.accounts.accountmanagementapp.exception.UserHasAlreadyExistException;
+import com.accounts.accountmanagementapp.exception.WrongValueStatusException;
 import com.accounts.accountmanagementapp.model.Role;
 import com.accounts.accountmanagementapp.model.Status;
 import com.accounts.accountmanagementapp.model.User;
@@ -60,16 +62,15 @@ public class UserServiceImpl implements UserService {
         return responseDTOMapper.apply(updatedUser);
     }
 
-    // TODO Обработать исключение при не совпадении паролей, чтобы выводил кастомное сообщение, что не так
     @Override
     public UserResponseDTO editPassword(UUID id, @Valid EditPasswordRequestDTO editPasswordRequestDTO) {
-        if (editPasswordRequestDTO.getPassword().equals(editPasswordRequestDTO.getConfirmPassword())) {
-            User user = getUserById(id);
-            user.setPassword(passwordEncoder.encode(editPasswordRequestDTO.getPassword()));
-            userRepository.save(user);
-            return responseDTOMapper.apply(user);
+        if (!editPasswordRequestDTO.getPassword().equals(editPasswordRequestDTO.getConfirmPassword())) {
+            throw new PasswordMismatchException("Введенные пароли не совпадают");
         }
-        return null;
+        User user = getUserById(id);
+        user.setPassword(passwordEncoder.encode(editPasswordRequestDTO.getPassword()));
+        userRepository.save(user);
+        return responseDTOMapper.apply(user);
     }
 
     @Override
@@ -81,14 +82,15 @@ public class UserServiceImpl implements UserService {
         return responseDTOMapper.apply(user);
     }
 
-    // TODO добавить 3-й вариант, когда и не active и не block (пробросить эсепш)
     @Override
-    public UserResponseDTO editStatus(UUID id, String status) {
+    public UserResponseDTO editStatus(UUID id, String status) throws WrongValueStatusException {
         User user = getUserById(id);
         if (status.equals("active")) {
             user.setStatus(Status.ACTIVE);
         } else if (status.equals("blocked")) {
             user.setStatus(Status.BLOCKED);
+        } else {
+            throw new WrongValueStatusException("Введите корректное значение статуса (active/blocked)");
         }
         return responseDTOMapper.apply(userRepository.save(user));
     }

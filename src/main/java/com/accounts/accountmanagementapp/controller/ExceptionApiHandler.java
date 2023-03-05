@@ -3,7 +3,9 @@ package com.accounts.accountmanagementapp.controller;
 import com.accounts.accountmanagementapp.dto.validationError.Field;
 import com.accounts.accountmanagementapp.dto.validationError.ValidationErrorResponse;
 import com.accounts.accountmanagementapp.dto.validationError.Violation;
+import com.accounts.accountmanagementapp.exception.PasswordMismatchException;
 import com.accounts.accountmanagementapp.exception.UserHasAlreadyExistException;
+import com.accounts.accountmanagementapp.exception.WrongValueStatusException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -33,6 +35,20 @@ public class ExceptionApiHandler {
         return ResponseEntity
                 .status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(userHasAlreadyExistException.getMessage());
+    }
+
+    @ExceptionHandler(WrongValueStatusException.class)
+    public ResponseEntity<String> handleException(WrongValueStatusException wrongValueStatusException) {
+        return ResponseEntity
+                .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(wrongValueStatusException.getMessage());
+    }
+
+    @ExceptionHandler(PasswordMismatchException.class)
+    public ResponseEntity<String> handleException(PasswordMismatchException passwordMismatchException) {
+        return ResponseEntity
+                .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(passwordMismatchException.getMessage());
     }
 
     @ResponseBody
