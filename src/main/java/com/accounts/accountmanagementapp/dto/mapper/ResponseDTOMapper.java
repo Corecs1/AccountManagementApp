@@ -2,13 +2,11 @@ package com.accounts.accountmanagementapp.dto.mapper;
 
 import com.accounts.accountmanagementapp.dto.responseDto.UserResponseDTO;
 import com.accounts.accountmanagementapp.model.User;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import java.util.function.Function;
+@Component
+public class ResponseDTOMapper {
 
-@Service
-public class UserResponseDTOMapper implements Function<User, UserResponseDTO> {
-    @Override
     public UserResponseDTO apply(User user) {
         return new UserResponseDTO(user.getId(),
                 user.getEmail(),

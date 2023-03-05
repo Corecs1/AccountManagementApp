@@ -6,7 +6,6 @@ import com.accounts.accountmanagementapp.dto.requestDto.EditUserRequestDTO;
 import com.accounts.accountmanagementapp.dto.requestDto.SaveUserRequestDTO;
 import com.accounts.accountmanagementapp.dto.responseDto.UserResponseDTO;
 import com.accounts.accountmanagementapp.exception.UserHasAlreadyExistException;
-import com.accounts.accountmanagementapp.model.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
@@ -16,13 +15,13 @@ public interface UserService extends UserDetailsService {
 
     UserResponseDTO saveUser(SaveUserRequestDTO saveUserRequestDTO) throws UserHasAlreadyExistException;
 
-    UserResponseDTO editUser(EditUserRequestDTO editUserRequestDTO);
+    UserResponseDTO editUser(UUID id, EditUserRequestDTO editUserRequestDTO);
 
-    UserResponseDTO editPassword(EditPasswordRequestDTO editPasswordDTO);
+    UserResponseDTO editPassword(UUID id, EditPasswordRequestDTO editPasswordDTO);
 
-    UserResponseDTO editRole(EditRoleRequestDTO editRoleRequestDTO);
+    UserResponseDTO editRole(UUID id, EditRoleRequestDTO editRoleRequestDTO);
 
-    UserResponseDTO editStatus(String status);
+    UserResponseDTO editStatus(UUID id, String status);
 
     void deleteUser(UUID id);
 

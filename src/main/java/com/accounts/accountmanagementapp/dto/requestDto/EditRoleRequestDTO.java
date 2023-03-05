@@ -12,5 +12,5 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EditRoleRequestDTO {
-    private UUID roleId;
+    private UUID role;
 }

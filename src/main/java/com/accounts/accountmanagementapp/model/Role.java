@@ -12,12 +12,12 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.util.UUID;
 
-@Entity
-@Table(name = "Roles")
-@Builder
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "Roles")
 public class Role implements GrantedAuthority {
 
     @Id

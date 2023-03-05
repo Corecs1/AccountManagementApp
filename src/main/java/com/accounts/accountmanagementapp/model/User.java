@@ -17,12 +17,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-@Entity
-@Table(name = "Users")
-@Builder
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "Users")
 public class User implements UserDetails {
 
     @Id

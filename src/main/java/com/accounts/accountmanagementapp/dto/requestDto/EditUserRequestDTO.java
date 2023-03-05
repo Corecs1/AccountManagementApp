@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EditUserRequestDTO {
     private String email;
-    private String lastName;
-    private String firsName;
+    private String familyName;
+    private String name;
     private String middleName;
 }
