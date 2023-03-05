@@ -23,7 +23,6 @@ import org.springframework.validation.annotation.Validated;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -43,11 +42,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDTO saveUser(@Valid SaveUserRequestDTO saveUserRequestDTO) throws UserHasAlreadyExistException {
 
-        if (userExist(saveUserRequestDTO.getEmail())) {
+        if (userRepository.getUserByEmail(saveUserRequestDTO.getEmail()).isPresent()) {
             throw new UserHasAlreadyExistException("Пользователь с данным email уже существует");
         }
 
-        Role role = roleRepository.getRoleById(saveUserRequestDTO.getRole());
+        Role role = roleRepository.findById(saveUserRequestDTO.getRole()).orElseThrow(() ->
+                new UsernameNotFoundException("Role is not found"));
         User user = requestDTOMapper.apply(saveUserRequestDTO, role, passwordEncoder);
         User savedUser = userRepository.save(user);
 
@@ -56,8 +56,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO editUser(UUID id, @Valid EditUserRequestDTO editUserRequestDTO) {
-        Optional<User> user = userRepository.findById(id);
-        User updatedUser = requestDTOMapper.apply(editUserRequestDTO, user.get());
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        String.format("User with id = [%s] is not found ", id)));
+        User updatedUser = requestDTOMapper.apply(editUserRequestDTO, user);
         userRepository.save(updatedUser);
         return responseDTOMapper.apply(updatedUser);
     }
@@ -65,59 +67,68 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDTO editPassword(UUID id, @Valid EditPasswordRequestDTO editPasswordRequestDTO) {
         if (editPasswordRequestDTO.getPassword().equals(editPasswordRequestDTO.getConfirmPassword())) {
-            Optional<User> user = userRepository.findById(id);
-            User updatedUser = user.get();
-            updatedUser.setPassword(passwordEncoder.encode(editPasswordRequestDTO.getPassword()));
-            userRepository.save(updatedUser);
-            return responseDTOMapper.apply(updatedUser);
+            User user = userRepository.findById(id)
+                    .orElseThrow(() -> new UsernameNotFoundException(
+                            String.format("User with id = [%s] is not found ", id)));
+            user.setPassword(passwordEncoder.encode(editPasswordRequestDTO.getPassword()));
+            userRepository.save(user);
+            return responseDTOMapper.apply(user);
         }
         return null;
     }
 
     @Override
     public UserResponseDTO editRole(UUID id, @Valid EditRoleRequestDTO editRoleRequestDTO) {
-        Role role = roleRepository.getRoleById(editRoleRequestDTO.getRole());
-        Optional<User> user = userRepository.findById(id);
-        User updatedUser = user.get();
-        updatedUser.setRole(role);
-        userRepository.save(updatedUser);
-        return responseDTOMapper.apply(updatedUser);
+        Role role = roleRepository.findById(editRoleRequestDTO.getRole()).orElseThrow(() ->
+                new UsernameNotFoundException("Role is not found"));
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        String.format("User with id = [%s] is not found ", id)));
+        user.setRole(role);
+        userRepository.save(user);
+        return responseDTOMapper.apply(user);
     }
 
     @Override
     public UserResponseDTO editStatus(UUID id, String status) {
-        Optional<User> user = userRepository.findById(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        String.format("User with id = [%s] is not found ", id)));
         if (status.equals("active")) {
-            user.get().setStatus(Status.ACTIVE);
+            user.setStatus(Status.ACTIVE);
         } else if (status.equals("blocked")) {
-            user.get().setStatus(Status.BLOCKED);
+            user.setStatus(Status.BLOCKED);
         }
-        return responseDTOMapper.apply(userRepository.save(user.get()));
+        return responseDTOMapper.apply(userRepository.save(user));
     }
 
     @Override
     public void deleteUser(UUID id) {
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        String.format("User with id = [%s] is not found ", id)));
+        userRepository.delete(user);
     }
 
     @Override
     public List<UserResponseDTO> getUsers() {
-        return userRepository.findAll().stream().map(responseDTOMapper::apply).collect(Collectors.toList());
+        return userRepository.findAll()
+                .stream()
+                .map(responseDTOMapper::apply)
+                .collect(Collectors.toList());
     }
 
     @Override
     public UserResponseDTO getUser(UUID id) {
-        return responseDTOMapper.apply(userRepository.findById(id).get());
+        return responseDTOMapper.apply(userRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        String.format("User with id = [%s] is not found ", id))));
     }
 
-    //TODO Обработать по нормальному
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.getUserByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.getUserByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return null;
-    }
-
-    private boolean userExist(String email) {
-        return userRepository.getUserByEmail(email).isPresent();
     }
 }
