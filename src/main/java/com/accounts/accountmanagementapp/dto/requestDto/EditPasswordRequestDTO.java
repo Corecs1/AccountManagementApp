@@ -13,9 +13,9 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class EditPasswordRequestDTO {
 
-    @NotBlank(message = "Password is an important field")
+    @NotBlank(message = "Password является обязательным полем")
     private String password;
 
-    @NotBlank(message = "ConfirmPassword is an important field")
+    @NotBlank(message = "ConfirmPassword является обязательным полем")
     private String confirmPassword;
 }

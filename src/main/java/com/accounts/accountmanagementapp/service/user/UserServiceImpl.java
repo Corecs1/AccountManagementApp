@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-// TODO Допилить все эндпоинты
+// TODO Допилить все эндпоинты, повтор кода
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -64,6 +64,7 @@ public class UserServiceImpl implements UserService {
         return responseDTOMapper.apply(updatedUser);
     }
 
+    // TODO Обработать исключение при не совпадении паролей, чтобы выводил кастомное сообщение, что не так
     @Override
     public UserResponseDTO editPassword(UUID id, @Valid EditPasswordRequestDTO editPasswordRequestDTO) {
         if (editPasswordRequestDTO.getPassword().equals(editPasswordRequestDTO.getConfirmPassword())) {

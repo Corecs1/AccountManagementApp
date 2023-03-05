@@ -17,24 +17,24 @@ import java.util.UUID;
 @NoArgsConstructor
 public class SaveUserRequestDTO {
 
-    @NotBlank(message = "Email is an important field")
-    @Email(message = "Incorrect email")
+    @NotBlank(message = "Email является обязательным полем")
+    @Email(message = "Некоректный email")
     private String email;
 
-    @NotBlank(message = "Password is an important field")
+    @NotBlank(message = "Password является обязательным полем")
     private String password;
 
-    @Pattern(message = "Family name should be correct", regexp = "[a-zA-Z\u0430-\u044F\u0410-\u042F-]+")
-    @NotBlank(message = "Family name is an important field")
+    @Pattern(message = "Введите корректную фамилию", regexp = "[a-zA-Z\u0430-\u044F\u0410-\u042F-]+")
+    @NotBlank(message = "Family является обязательным полем")
     private String familyName;
 
-    @Pattern(message = "Name should be correct", regexp = "[a-zA-Z\u0430-\u044F\u0410-\u042F-]+")
-    @NotBlank(message = "Name is an important field")
+    @Pattern(message = "Введите корректное имя", regexp = "[a-zA-Z\u0430-\u044F\u0410-\u042F-]+")
+    @NotBlank(message = "Name является обязательным полем")
     private String name;
 
-    @Pattern(message = "Middle name should be correct", regexp = "[a-zA-Z\u0430-\u044F\u0410-\u042F-]+")
+    @Pattern(message = "Введите корректное отчество", regexp = "[a-zA-Z\u0430-\u044F\u0410-\u042F-]+")
     private String middleName;
 
-    @NotNull(message = "Role is an important field")
+    @NotNull(message = "Role является обязательным полем")
     private UUID role;
 }

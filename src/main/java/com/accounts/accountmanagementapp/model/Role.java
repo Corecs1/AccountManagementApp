@@ -24,7 +24,6 @@ public class Role implements GrantedAuthority {
     @GeneratedValue(generator = "UUID")
     private UUID id;
 
-    //TODO Подумать еще раз над regexp (возможно необходимо начало и конец строки с букв)
     @Pattern(message = "Name should be correct", regexp = "[a-zA-Z\u0430-\u044F\u0410-\u042F-_ ]+")
     @NotBlank(message = "Name is an important field")
     @Column(name = "name", unique = true)

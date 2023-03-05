@@ -22,7 +22,6 @@ public class UserController {
 
     private final UserService userService;
 
-    // TODO Тут надо выбрасывать response с ошибкой для клиента
     @PostMapping()
     public ResponseEntity<UserResponseDTO> saveUser(@RequestBody SaveUserRequestDTO saveUserRequestDTO) throws UserHasAlreadyExistException {
         return new ResponseEntity<>(userService.saveUser(saveUserRequestDTO), HttpStatus.OK);

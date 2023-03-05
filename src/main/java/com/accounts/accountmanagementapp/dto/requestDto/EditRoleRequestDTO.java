@@ -13,6 +13,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EditRoleRequestDTO {
-    @NotNull(message = "Role is an important field")
+    @NotNull(message = "Role является обязательным полем")
     private UUID role;
 }
