@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> editUser(@PathVariable UUID id, @RequestBody EditUserRequestDTO editUserRequestDTO) {
+    public ResponseEntity<UserResponseDTO> editUser(@PathVariable UUID id, @RequestBody EditUserRequestDTO editUserRequestDTO) throws UserHasAlreadyExistException {
         return new ResponseEntity<>(userService.editUser(id, editUserRequestDTO), HttpStatus.OK);
     }
 

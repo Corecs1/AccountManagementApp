@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-// TODO Допилить все эндпоинты, повтор кода
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -41,13 +40,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO saveUser(@Valid SaveUserRequestDTO saveUserRequestDTO) throws UserHasAlreadyExistException {
+        duplicateUserCheck(saveUserRequestDTO.getEmail());
 
-        if (userRepository.getUserByEmail(saveUserRequestDTO.getEmail()).isPresent()) {
-            throw new UserHasAlreadyExistException("Пользователь с данным email уже существует");
-        }
-
-        Role role = roleRepository.findById(saveUserRequestDTO.getRole()).orElseThrow(() ->
-                new UsernameNotFoundException("Role is not found"));
+        Role role = getRoleById(saveUserRequestDTO.getRole());
         User user = requestDTOMapper.apply(saveUserRequestDTO, role, passwordEncoder);
         User savedUser = userRepository.save(user);
 
@@ -55,10 +50,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO editUser(UUID id, @Valid EditUserRequestDTO editUserRequestDTO) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException(
-                        String.format("User with id = [%s] is not found ", id)));
+    public UserResponseDTO editUser(UUID id, @Valid EditUserRequestDTO editUserRequestDTO) throws UserHasAlreadyExistException {
+        User user = getUserById(id);
+        if (!user.getEmail().equals(editUserRequestDTO.getEmail())) {
+            duplicateUserCheck(editUserRequestDTO.getEmail());
+        }
         User updatedUser = requestDTOMapper.apply(editUserRequestDTO, user);
         userRepository.save(updatedUser);
         return responseDTOMapper.apply(updatedUser);
@@ -68,9 +64,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDTO editPassword(UUID id, @Valid EditPasswordRequestDTO editPasswordRequestDTO) {
         if (editPasswordRequestDTO.getPassword().equals(editPasswordRequestDTO.getConfirmPassword())) {
-            User user = userRepository.findById(id)
-                    .orElseThrow(() -> new UsernameNotFoundException(
-                            String.format("User with id = [%s] is not found ", id)));
+            User user = getUserById(id);
             user.setPassword(passwordEncoder.encode(editPasswordRequestDTO.getPassword()));
             userRepository.save(user);
             return responseDTOMapper.apply(user);
@@ -80,21 +74,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO editRole(UUID id, @Valid EditRoleRequestDTO editRoleRequestDTO) {
-        Role role = roleRepository.findById(editRoleRequestDTO.getRole()).orElseThrow(() ->
-                new UsernameNotFoundException("Role is not found"));
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException(
-                        String.format("User with id = [%s] is not found ", id)));
+        Role role = getRoleById(editRoleRequestDTO.getRole());
+        User user = getUserById(id);
         user.setRole(role);
         userRepository.save(user);
         return responseDTOMapper.apply(user);
     }
 
+    // TODO добавить 3-й вариант, когда и не active и не block (пробросить эсепш)
     @Override
     public UserResponseDTO editStatus(UUID id, String status) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException(
-                        String.format("User with id = [%s] is not found ", id)));
+        User user = getUserById(id);
         if (status.equals("active")) {
             user.setStatus(Status.ACTIVE);
         } else if (status.equals("blocked")) {
@@ -105,9 +95,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(UUID id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException(
-                        String.format("User with id = [%s] is not found ", id)));
+        User user = getUserById(id);
         userRepository.delete(user);
     }
 
@@ -121,15 +109,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO getUser(UUID id) {
-        return responseDTOMapper.apply(userRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException(
-                        String.format("User with id = [%s] is not found ", id))));
+        return responseDTOMapper.apply(getUserById(id));
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.getUserByEmail(username)
+        return userRepository.getUserByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return null;
+    }
+
+    private User getUserById(UUID id) {
+        return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException(
+                String.format("Пользователь с идентификатором '[%s]' не найден", id)));
+    }
+
+    private Role getRoleById(UUID id) {
+        return roleRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException(
+                String.format("Роль с идентификатором '[%s]' не найдена", id)));
+    }
+
+    private void duplicateUserCheck(String email) throws UserHasAlreadyExistException {
+        if (userRepository.getUserByEmail(email).isPresent()) {
+            throw new UserHasAlreadyExistException("Другой пользователь с таким e-mail уже существует");
+        }
     }
 }

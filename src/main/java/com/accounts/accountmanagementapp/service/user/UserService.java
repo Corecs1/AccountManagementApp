@@ -18,7 +18,7 @@ public interface UserService extends UserDetailsService {
 
     UserResponseDTO saveUser(@Valid SaveUserRequestDTO saveUserRequestDTO) throws UserHasAlreadyExistException;
 
-    UserResponseDTO editUser(UUID id, @Valid EditUserRequestDTO editUserRequestDTO);
+    UserResponseDTO editUser(UUID id, @Valid EditUserRequestDTO editUserRequestDTO) throws UserHasAlreadyExistException;
 
     UserResponseDTO editPassword(UUID id, @Valid EditPasswordRequestDTO editPasswordDTO);
 
